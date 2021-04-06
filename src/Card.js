@@ -1,15 +1,12 @@
 import React from 'react'
 import DeckFunctions from './deckFunctions'
-import punch from './Cards/punch.JPG'
+// import punch from './Cards/punch.JPG'
 class Card extends React.Component {
     render() {
         var card= this.props.card;
         var gameCode = this.props.gameCode;
         var canBuy = false;
-        
-        var cardName = card.CardName.replace(' ', '%');
-        var source = `./Cards/${card.CardName.replace(/\s/g, "").toLowerCase()}.JPG`;
-        var imageUrl = "https://www.dcdeckbuilding.com/scans/" +  cardName + ".jpeg"
+        var cardNameForUrl = card.CardName.replace(/\s/g, "").replace(',', "").toLowerCase();
         if (this.props.canBuy) {
             canBuy = true;
         }
@@ -17,18 +14,17 @@ class Card extends React.Component {
         return (
             <div>
                 <div class="card">
-                    <div class="card-header text-left">
+                    <div class="card-header text-left row">
                         <div>
                             {card.CardName}
                         </div>
 
-                        <div>
-                            {canBuy ?
-                                <DeckFunctions cardId={card.cardId} gameCode={gameCode} player={player}/> : null}
+                        <div class="header-button">
+
                         </div>
                     </div>
                     <div class="cardImage">
-                    <img src={punch}></img>
+                    <img src={`https://firebasestorage.googleapis.com/v0/b/dc-deck.appspot.com/o/${cardNameForUrl}.JPG?alt=media`} alt=""></img>
                     </div>
                     <div class="card-type">
                         {card.Type}
@@ -36,9 +32,13 @@ class Card extends React.Component {
                     <div class="card-text">
                         {card.CardText}
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer row">
                         <div class="float-left">
                             {card.VictoryPoints}
+                        </div>
+                        <div class="buy-button">
+                        {canBuy ?
+                                <DeckFunctions cardId={card.CardId} gameCode={gameCode} player={player}/> : null}
                         </div>
                         <div class="float-right bold">
                             {card.Cost}
@@ -49,4 +49,4 @@ class Card extends React.Component {
         )
     }
 }
-export default Card
+export default Card;

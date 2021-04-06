@@ -7,40 +7,70 @@ class DeckFunctions extends React.Component {
         var player = this.props.player;
         var game = this.props.gameCode;
         var gameDB = firebase.database().ref().child('Game').child(game);
-        var drawStackDB = gameDB.child('PurchaseRow');
+        
+        var purchaseRowDB = gameDB.child('PurchaseRow');
+        var villainStackDB = gameDB.child('SuperVillains');
+        var villainUPDB = gameDB.child('SuperVillian');
         var playerDiscardDB = gameDB.child('Players').child(player).child('Discard');
-        let drawStack = []
+        let purchaseRow = []
         let discard = [];
-        drawStackDB.on('value', querySnapShot => {
+        let villainStack = [];
+        let villain = {};
+        purchaseRowDB.on('value', querySnapShot => {
             let data = querySnapShot.val() ? querySnapShot.val() : {};
-            let d = {...data};
-            drawStack = data;
+            purchaseRow = data;
           });;
+          villainStackDB.on('value', querySnapShot => {
+            let data = querySnapShot.val() ? querySnapShot.val() : {};
+            villainStack = data;
+          });;
+          villainUPDB.on('value', querySnapShot => {
+            let data = querySnapShot.val() ? querySnapShot.val() : {};
+            villain = data;
+          });;
+        
           playerDiscardDB.on('value', querySnapShot => {
             let data = querySnapShot.val() ? querySnapShot.val() : {};
-            let d = {...data};
             discard = data;
           });;
-        var newDrawStack = [];
+        var newPurchaseRow = [];
         var boughtCard = {};
-        var newDiscard = [...discard];
+        var newDiscard = [];
+        if (discard && discard.propertyIsEnumerable()){
+            newDiscard = [...discard];
+        }
         var i = 0;
-        drawStack.forEach(card => {
-            if (card.cardId !== cardId) {
-                newDrawStack[i] = card;
-                i++;
+        var newVillain = {};
+        if (villain.CardId === cardId) {
+            newDiscard[newDiscard.length] = villain;
+            playerDiscardDB.set(villain);
+
+            if (villainStack && villainStack.propertyIsEnumerable()) {
+
+                newVillain = villainStack.pop();
+                villainUPDB.set(newVillain);
+                villainStackDB.set(villainStack);
             } else {
-                boughtCard = card;
-                cardId = 0; 
+                villainUPDB.remove();
             }
-        });
-        newDiscard[newDiscard.length] = boughtCard;
-        drawStackDB.set(newDrawStack);
-        playerDiscardDB.set(newDiscard);
+        } else {
+            purchaseRow.forEach(card => {
+                if (card.CardId !== cardId) {
+                    newPurchaseRow[i] = card;
+                    i++;
+                } else {
+                    boughtCard = card;
+                    cardId = 0; 
+                }
+            });
+            newDiscard[newDiscard.length] = boughtCard;
+            purchaseRowDB.set(newPurchaseRow);
+            playerDiscardDB.set(newDiscard);
+        }
     }
     render () {
         return ( 
-            <Button onClick={this.buyCard.bind(this, this.props.CardId)}>Buy</Button>
+            <Button onClick={this.buyCard.bind(this, this.props.cardId)}>Buy</Button>
             )
     }
 }

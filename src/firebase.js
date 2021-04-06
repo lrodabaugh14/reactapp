@@ -5,7 +5,8 @@ var firebaseConfig = {
     projectId: "dc-deck",
     messagingSenderId: "855704658762",
     appId: "1:855704658762:web:c866ad45c7e746c24097b3",
-    measurementId: "G-JEMHPME02J"
+    measurementId: "G-JEMHPME02J",
+    storageBucket: "gs://dc-deck.appspot.com"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
